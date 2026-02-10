@@ -1,0 +1,119 @@
+{
+  "version": "2.0",
+  "prNumber": 456,
+  "branch": "feature/add-user-validation",
+  "createdAt": "2026-02-10T10:30:00Z",
+  "githubUsername": "octocat",
+  "approvedThreads": [
+    {
+      "id": "PRRT_abc123",
+      "path": "pages/api/v3.0/users/index.ts",
+      "line": 45,
+      "originalLine": 45,
+      "diffSide": "RIGHT",
+      "comments": [
+        {
+          "id": "PRRC_comment1",
+          "body": "Consider adding error handling for this async call:\n\n```suggestion\ntry {\n  const result = await fetchUsers();\n  return result;\n} catch (error) {\n  console.error('Failed to fetch users:', error);\n  res.status(500).json({ error: 'Internal server error' });\n}\n```",
+          "author": "reviewer1",
+          "createdAt": "2026-02-10T09:15:00Z",
+          "diffHunk": "@@ -40,6 +40,10 @@ router.get(allow(Role.SUPER_ADMIN), async (req, res) => {\n   const result = await fetchUsers();\n   return result;"
+        }
+      ]
+    },
+    {
+      "id": "PRRT_abc124",
+      "path": "pages/api/v3.0/users/index.ts",
+      "line": 78,
+      "originalLine": 78,
+      "diffSide": "RIGHT",
+      "comments": [
+        {
+          "id": "PRRC_comment2",
+          "body": "Missing validation for user input:\n\n```suggestion\nif (!id || typeof id !== 'string') {\n  return res.status(400).json({ error: 'Invalid user ID' });\n}\n```",
+          "author": "reviewer1",
+          "createdAt": "2026-02-10T09:20:00Z",
+          "diffHunk": "@@ -75,3 +75,8 @@ router.get(allow(Role.SUPER_ADMIN), async (req, res) => {\n   const { id } = req.query;"
+        }
+      ]
+    },
+    {
+      "id": "PRRT_abc125",
+      "path": "__tests__/pages/api/v3.0/users/index.test.ts",
+      "line": 56,
+      "originalLine": 56,
+      "diffSide": "RIGHT",
+      "comments": [
+        {
+          "id": "PRRC_comment3",
+          "body": "Add test for error handling:\n\n```suggestion\ndescribe('error handling', () => {\n  it('should return 500 on database error', async () => {\n    jest.spyOn(userService, 'findOne').mockRejectedValueOnce(new Error('DB Error'));\n    const response = await request(handler).get('/123');\n    expect(response.status).toBe(500);\n  });\n});\n```",
+          "author": "reviewer2",
+          "createdAt": "2026-02-10T09:30:00Z",
+          "diffHunk": "@@ -50,4 +50,10 @@ describe('GET /api/v3.0/users', () => {\n   });"
+        }
+      ]
+    },
+    {
+      "id": "PRRT_abc126",
+      "path": "helpers/formatDate.ts",
+      "line": 12,
+      "originalLine": 12,
+      "diffSide": "RIGHT",
+      "comments": [
+        {
+          "id": "PRRC_comment4",
+          "body": "This should handle invalid date inputs gracefully:\n\n```suggestion\nexport function formatDate(input: string | Date): string {\n  const date = input instanceof Date ? input : new Date(input);\n  if (isNaN(date.getTime())) {\n    return '';\n  }\n  return date.toISOString().split('T')[0];\n}\n```",
+          "author": "reviewer1",
+          "createdAt": "2026-02-10T09:35:00Z",
+          "diffHunk": "@@ -10,4 +10,6 @@ export function formatDate(input: string | Date): string {\n   const date = input instanceof Date ? input : new Date(input);\n   return date.toISOString().split('T')[0];"
+        }
+      ]
+    }
+  ],
+  "buckets": [
+    {
+      "id": 1,
+      "rationale": "The route handler (pages/api/v3.0/users/index.ts) and its test file (__tests__/pages/api/v3.0/users/index.test.ts) are logically coupled - the error handling suggestion in the route directly relates to the new error test being added.",
+      "files": [
+        "pages/api/v3.0/users/index.ts",
+        "__tests__/pages/api/v3.0/users/index.test.ts"
+      ],
+      "threads": [
+        {
+          "id": "PRRT_abc123",
+          "path": "pages/api/v3.0/users/index.ts",
+          "line": 45
+        },
+        {
+          "id": "PRRT_abc124",
+          "path": "pages/api/v3.0/users/index.ts",
+          "line": 78
+        },
+        {
+          "id": "PRRT_abc125",
+          "path": "__tests__/pages/api/v3.0/users/index.test.ts",
+          "line": 56
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "rationale": "Independent utility function change in helpers/formatDate.ts with no cross-file dependencies to other suggestions.",
+      "files": [
+        "helpers/formatDate.ts"
+      ],
+      "threads": [
+        {
+          "id": "PRRT_abc126",
+          "path": "helpers/formatDate.ts",
+          "line": 12
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalApprovedThreads": 4,
+    "totalBuckets": 2,
+    "totalFiles": 3
+  }
+}
